@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 // Switch this to your own contract address once deployed, for bookkeeping!
-// Example Contract Address on Goerli:
+// Example Contract Address on Goerli: 0x842e3d787C37eC6787513801e387b31fDb0142B1
 
 contract BuyMeACoffee {
     // Event to emit when a Memo is created.

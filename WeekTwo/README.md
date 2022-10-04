@@ -25,7 +25,7 @@ Rename the default contract in `contracts/*.sol` to `BuyMeACoffee.sol` and copy 
 pragma solidity ^0.8.0;
 
 // Switch this to your own contract address once deployed, for bookkeeping!
-// Example Contract Address on Goerli:
+// Example Contract Address on Goerli: 0x6D6feE01bb4dCe69741448c62B89E3339F485E25
 
 contract BuyMeACoffee {
     // Event to emit when a Memo is created.
@@ -283,7 +283,7 @@ async function getBalance(provider, address) {
 
 async function main() {
   // Get the contract that has been deployed to Goerli.
-  const contractAddress="0xDBa03676a2fBb6711CB652beF5B7416A53c1421D";
+  const contractAddress="0x6D6feE01bb4dCe69741448c62B89E3339F485E25";
   const contractABI = abi.abi;
 
   // Get the node connection and wallet connection.
@@ -325,3 +325,15 @@ main()
 ```
 
 ## Build the frontend with Ethers.js
+
+1. Update the contractAddress in pages/index.js
+2. Update the name strings to be your own name in pages/index.js
+3. Ensure that the contract ABI matches your contract in utils/BuyMeACoffee.json
+
+### Run the app locally
+
+`npm run dev`
+
+## Checkout my Deployed version here:
+
+### Visit [Alchemy Road To Web 3 - Week 2](https://docs.alchemy.com/docs/how-to-build-buy-me-a-coffee-defi-dapp) for the full tutorial

@@ -7,7 +7,7 @@ import styles from '../styles/Home.module.css';
 
 export default function Home() {
   // Contract Address & ABI
-  const contractAddress = '';
+  const contractAddress = '0x842e3d787C37eC6787513801e387b31fDb0142B1';
   const contractABI = abi.abi;
 
   // Component state
@@ -34,6 +34,7 @@ export default function Home() {
 
       if (accounts.length > 0) {
         const account = accounts[0];
+        setCurrentAccount(account);
         console.log('wallet is connected! ' + account);
       } else {
         console.log('make sure MetaMask is connected');
