@@ -330,10 +330,12 @@ main()
 2. Update the name strings to be your own name in pages/index.js
 3. Ensure that the contract ABI matches your contract in utils/BuyMeACoffee.json
 
-### Run the app locally
+## Run the app locally
 
 `npm run dev`
 
-## Checkout my Deployed version here:
+## Checkout my running version here:
+
+https://alchemy-buy-me-a-coffee.herokuapp.com/
 
 ### Visit [Alchemy Road To Web 3 - Week 2](https://docs.alchemy.com/docs/how-to-build-buy-me-a-coffee-defi-dapp) for the full tutorial
