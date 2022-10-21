@@ -5,3 +5,5 @@
 [How to develop and deploy a Smart Contract](WeekTwo)
 
 [How to Make NFTs with On-Chain Metadata](WeekThree)
+
+[How to Create an NFT Gallery](WeekFour)
