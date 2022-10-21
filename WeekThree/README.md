@@ -62,14 +62,24 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
+// npx hardhat verify --network mumbai 0xBC683d8d0f0E2D92bCDba413C60b87d69AaBc274
+
 contract ChainBattles is ERC721URIStorage {
     // ssociating all the methods inside the "Strings" library to the uint256 type
     using Strings for uint256;
     using Counters for Counters.Counter;
     // store our NFT IDs:
     Counters.Counter private _tokenIds;
-    // store the level of an NFT associated with its tokenId
-    mapping(uint256 => uint256) public tokenIdToLevels;
+
+    // Attributes of the NFT stored on-chain
+    struct Attributes {
+        uint256 level;
+        uint256 speed;
+        uint256 strengh;
+        uint256 life;
+    }
+    // store the attributes of an NFT associated with its tokenId
+    mapping(uint256 => Attributes) public tokenIdToAttributes;
 
     constructor() ERC721("Chain Battles", "CBTLS") {}
 
@@ -99,7 +109,7 @@ contract ChainBattles is ERC721URIStorage {
 
     // get the current level of an NFT
     function getLevels(uint256 tokenId) public view returns (string memory) {
-        uint256 levels = tokenIdToLevels[tokenId];
+        uint256 levels = tokenIdToAttributes[tokenId].level;
         return levels.toString();
     }
 
@@ -129,7 +139,13 @@ contract ChainBattles is ERC721URIStorage {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         _safeMint(msg.sender, newItemId);
-        tokenIdToLevels[newItemId] = 0;
+        Attributes attrs = Attributes(
+            random(100),
+            random(100),
+            random(100),
+            random(100)
+        );
+        tokenIdToAttributes[newItemId] = attrs;
         _setTokenURI(newItemId, getTokenURI(newItemId));
     }
 
@@ -140,9 +156,31 @@ contract ChainBattles is ERC721URIStorage {
             ownerOf(tokenId) == msg.sender,
             "You must own this token to train it"
         );
-        uint256 currentLevel = tokenIdToLevels[tokenId];
-        tokenIdToLevels[tokenId] = currentLevel + 1;
+        uint256 currentLevel = tokenIdToAttributes[tokenId].level;
+        uint256 currentSpeed = tokenIdToAttributes[tokenId].speed;
+        uint256 currentStrength = tokenIdToAttributes[tokenId].strengh;
+        uint256 currentLife = tokenIdToAttributes[tokenId].life;
+        Attributes attrs = Attributes(
+            currentLevel + 1,
+            currentSpeed + 1,
+            currentStrength + 1,
+            currentLife + 1
+        );
+        tokenIdToAttributes[tokenId] = attrs;
         _setTokenURI(tokenId, getTokenURI(tokenId));
+    }
+
+    function random(uint number) public view returns (uint) {
+        return
+            uint(
+                keccak256(
+                    abi.encodePacked(
+                        block.timestamp,
+                        block.difficulty,
+                        msg.sender
+                    )
+                )
+            ) % number;
     }
 }
 ```
