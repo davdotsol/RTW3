@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-}
+  images: {
+    domains: ['nft-cdn.alchemy.com', 'localhost'], // <== Domain name
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

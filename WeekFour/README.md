@@ -6,7 +6,7 @@ excerpt: Learn how to use the Alchemy NFT API to build an NFT gallery
 isFeatured: true
 ---
 
-# How to Create an NFT Gallery
+# RTW3 - Week 4 - How to Create an NFT Gallery
 
 Querying the blockchain is not an easy task for a developer. Luckily, using the [Alchemy NFT API](https://docs.alchemy.com/reference/nft-api) one can easily query the blockchain and answer the question: "What NFTs does a wallet own?"
 
@@ -541,11 +541,12 @@ Notice the use of the Alchemy API functions getNFTs and getNFTsForCollection and
 
 ### Create the NFT Card component
 
-We can now create our NFT type right above our App component and update our code so that we can set the NFTs to display:
+We can now create our NFT type right above our App component and update our code so that we can set the NFTs to display.
 
 Here is the complete final code:
 
 ```javascript
+import Image from 'next/image';
 import { ChangeEvent, FormEvent, useState } from 'react';
 
 type NFT = {
@@ -674,7 +675,12 @@ const HomePage = () => {
       <ul className="card-list">
         {NFTs.map((nft) => (
           <li key={nft.tokenId} className="card-container">
-            <img alt={nft.description} src={nft.image} />
+            <Image
+              alt={nft.title}
+              src={nft.image}
+              width={400}
+              height={500}
+            />
             <h2>{nft.title}</h2>
             <p>{nft.contractAddress}</p>
             <p>{nft.description}</p>

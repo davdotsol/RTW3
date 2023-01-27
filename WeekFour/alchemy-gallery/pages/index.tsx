@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { ChangeEvent, FormEvent, useState } from 'react';
 
 type NFT = {
@@ -81,6 +82,7 @@ const HomePage = () => {
   };
 
   const fetchNFTsForCollection = async () => {
+    // Bored Ape address for testing purpose 0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D
     if (collectionAddress.length) {
       console.log('fetching nfts for collection only');
       var requestOptions = {
@@ -141,9 +143,13 @@ const HomePage = () => {
       <ul className="card-list">
         {NFTs.map((nft) => (
           <li key={nft.tokenId} className="card-container">
-            <img alt={nft.description} src={nft.image} />
+            <Image alt={nft.title} src={nft.image} width={400} height={500} />
             <h2>{nft.title}</h2>
-            <p>{nft.contractAddress}</p>
+            <p>
+              {nft.contractAddress.slice(0, 7) +
+                '....' +
+                nft.contractAddress.slice(34, 42)}
+            </p>
             <p>{nft.description}</p>
           </li>
         ))}
