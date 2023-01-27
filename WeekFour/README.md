@@ -462,19 +462,72 @@ Notice the use of the Alchemy API functions getNFTs and getNFTsForCollection and
 
 ### Create the NFT Card component
 
-```javascript
-
-```
-
 We want to display 5 properties:
 
-Image
-Title
-TokenId
-Contract Address
-Description
+- Image
+- Title
+- TokenId
+- Contract Address
+- Description
 
 To access such properties have a look again at the NFT Object returned by the getNFTs and getNFTsForCollection api calls.
+
+This is an example of the json returned for nfts:
+
+```json
+{
+    "ownedNfts": [
+        {
+            "contract": {
+                "address": "0x0beed7099af7514ccedf642cfea435731176fb02"
+            },
+            "id": {
+                "tokenId": "28",
+                "tokenMetadata": {
+                    "tokenType": "ERC721"
+                }
+            },
+            "title": "DuskBreaker #28",
+            "description": "Breakers have the honor of serving humanity through their work on The Dusk. They are part of a select squad of 10,000 recruits who spend their days exploring a mysterious alien spaceship filled with friends, foes, and otherworldly technology.",
+            "tokenUri": {
+                "raw": "https://duskbreakers.gg/api/breakers/28",
+                "gateway": "https://duskbreakers.gg/api/breakers/28"
+            },
+            "media": [
+                {
+                    "raw": "https://duskbreakers.gg/breaker_images/28.png",
+                    "gateway": "https://duskbreakers.gg/breaker_images/28.png"
+                }
+            ],
+            "metadata": {
+                "name": "DuskBreaker #28",
+                "description": "Breakers have the honor of serving humanity through their work on The Dusk. They are part of a select squad of 10,000 recruits who spend their days exploring a mysterious alien spaceship filled with friends, foes, and otherworldly technology.",
+                "image": "https://duskbreakers.gg/breaker_images/28.png",
+                "external_url": "https://duskbreakers.gg",
+                "attributes": [
+                    {
+                        "value": "Locust Rider Armor (Red)",
+                        "trait_type": "Clothes"
+                    },
+                    ......
+                    {
+                        "value": "Big Smile (Purple)",
+                        "trait_type": "Mouth"
+                    },
+                    {
+                        "value": "Yellow",
+                        "trait_type": "Background"
+                    }
+                ]
+            },
+            "timeLastUpdated": "2022-02-16T22:52:54.719Z"
+        },
+        ......
+    ],
+    "totalCount": 6,
+    "blockHash": "0xeb2d26af5b6175344a14091777535a2cb21c681665a734a8285f889981987630"
+}
+```
 
 We can now create our NFT type right above our App component and update our code so that we can set the NFTs to display:
 
@@ -716,3 +769,5 @@ body {
   transform: scale(1.05);
 }
 ```
+
+### Visit [Alchemy Road To Web 3 - Week 4](https://docs.alchemy.com/docs/how-to-create-an-nft-gallery) for the full tutorial

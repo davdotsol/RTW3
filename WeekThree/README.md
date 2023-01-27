@@ -259,7 +259,3 @@ Navigate back to mumbai.polygonscan.com, click on the contract tab > Write Contr
 View the image update on [https://testnets.opensea.io/](https://testnets.opensea.io/)
 
 ### Visit [Alchemy Road To Web 3 - Week 3](https://docs.alchemy.com/docs/how-to-make-nfts-with-on-chain-metadata-hardhat-and-javascript) for the full tutorial
-
-```
-
-```
