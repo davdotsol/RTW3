@@ -1,16 +1,24 @@
-# RTW3 - Week 4 - How to Create an NFT Gallery
+---
+title: 'How to create an NFT Gallery'
+date: '2023-02-01'
+image: how-to-create-nft-gallery.png
+excerpt: Learn how to use the Alchemy NFT API to build an NFT gallery
+isFeatured: true
+---
+
+# How to Create an NFT Gallery
 
 Querying the blockchain is not an easy task for a developer. Luckily, using the [Alchemy NFT API](https://docs.alchemy.com/reference/nft-api) one can easily query the blockchain and answer the question: "What NFTs does a wallet own?"
 
 This is what we are going to learn in this post by developing a NFT gallery, in NextJS, TypeScript and the Alchemy api, that displays NFTs by wallet address and smart contract address.
 
-First of all you will need a [free Alchemy account](https://www.alchemy.com/).
-
 ## How to Create an NFT Gallery
 
 **Pre requisite:**
 
-To develop the app you will need to have NodeJS installed on your computer.
+First of all you will need a [free Alchemy account](https://www.alchemy.com/) and to [create an app](https://docs.alchemy.com/docs/alchemy-quickstart-guide).
+
+You will also need to have [NodeJS](https://nodejs.org/en/) installed on your computer in order to create the NextJS app.
 
 ### Project Setup
 
@@ -81,7 +89,81 @@ Browsing to localhost:3000 should render the following page:
 
 This is what the final app will look like:
 
-But first let's create our home page.\
+But first let's explore the API and create our home page.
+
+### Exploring the NFT API
+
+We will make use of two endpoints from [Alchemy NFT API](https://docs.alchemy.com/reference/nft-api)
+
+- [getNFTs](https://docs.alchemy.com/reference/getnfts) endpoint.
+- [getNFTsForCollection](https://docs.alchemy.com/reference/getnftsforcollection) endpoint.
+
+By having a look at the NFT Object returned by the getNFTs and getNFTsForCollection api calls:
+
+```json
+{
+    "ownedNfts": [
+        {
+            "contract": {
+                "address": "0x0beed7099af7514ccedf642cfea435731176fb02"
+            },
+            "id": {
+                "tokenId": "28",
+                "tokenMetadata": {
+                    "tokenType": "ERC721"
+                }
+            },
+            "title": "DuskBreaker #28",
+            "description": "Breakers have the honor of serving humanity through their work on The Dusk. They are part of a select squad of 10,000 recruits who spend their days exploring a mysterious alien spaceship filled with friends, foes, and otherworldly technology.",
+            "tokenUri": {
+                "raw": "https://duskbreakers.gg/api/breakers/28",
+                "gateway": "https://duskbreakers.gg/api/breakers/28"
+            },
+            "media": [
+                {
+                    "raw": "https://duskbreakers.gg/breaker_images/28.png",
+                    "gateway": "https://duskbreakers.gg/breaker_images/28.png"
+                }
+            ],
+            "metadata": {
+                "name": "DuskBreaker #28",
+                "description": "Breakers have the honor of serving humanity through their work on The Dusk. They are part of a select squad of 10,000 recruits who spend their days exploring a mysterious alien spaceship filled with friends, foes, and otherworldly technology.",
+                "image": "https://duskbreakers.gg/breaker_images/28.png",
+                "external_url": "https://duskbreakers.gg",
+                "attributes": [
+                    {
+                        "value": "Locust Rider Armor (Red)",
+                        "trait_type": "Clothes"
+                    },
+                    ......
+                    {
+                        "value": "Big Smile (Purple)",
+                        "trait_type": "Mouth"
+                    },
+                    {
+                        "value": "Yellow",
+                        "trait_type": "Background"
+                    }
+                ]
+            },
+            "timeLastUpdated": "2022-02-16T22:52:54.719Z"
+        },
+        ......
+    ],
+    "totalCount": 6,
+    "blockHash": "0xeb2d26af5b6175344a14091777535a2cb21c681665a734a8285f889981987630"
+}
+```
+
+For our gallery we want to display 5 NFT properties:
+
+- Image => (media[0].gateway)
+- Title => (title)
+- TokenId => (id.tokenId)
+- Contract Address => (contract.address)
+- Description => (description)
+
+With that in mind let's now create the Home Page.
 
 ### Create a Home Page
 
@@ -264,22 +346,23 @@ const HomePage = () => {
 export default HomePage;
 ```
 
-Check that everything works fine by entering wallet address and collection address and looking at the console logs.
+Check that everything works fine by entering wallet address and collection address and look at the console logs the addresses should be displayed when you click the button.
 
 Now let's fetch some NFTs
 
 ### Create the FetchNFTs function
 
-First you will need to create a new app on the Alchemy Platform.
-
-Selecting the Ethereum mainnet will allow you to fetch NFTs only from Ethereum.
+From the Alchemy Platform selecting the Ethereum mainnet for your API key will allow you to fetch NFTs only from Ethereum.
 
 If you want to fetch NFTs on Polygon or other chains, you'll need to create a new application with the respective chain and change the base URL to reflect the chain you want to use, for example, Polygon's URL would be: https://polygon-mumbai.g.alchemy.com/v2/YOUR-API-KEY
 
-Now let's implement the functions that will fetch NFTs.
+Now let's implement the functions that make use of the API endpoints to fetch NFTs.
 
 ```javascript
-const fetchNFTs = async () => {
+const fetchNFTsForWallet = async () => {
+  if (!walletAddress) {
+    return;
+  }
   let nfts;
   console.log('fetching nfts');
   const api_key = 'A8A1Oo_UTB9IN5oNHfAc2tAxdR4UVwfM';
@@ -287,8 +370,8 @@ const fetchNFTs = async () => {
   var requestOptions = {
     method: 'GET',
   };
-
-  if (!collection.length) {
+  if (!collectionAddress.length) {
+    console.log('fetching nfts for wallet only');
     const fetchURL = `${baseURL}?owner=${walletAddress}`;
 
     nfts = await fetch(fetchURL, requestOptions).then((data) => data.json());
@@ -300,7 +383,6 @@ const fetchNFTs = async () => {
 
   if (nfts) {
     console.log('nfts:', nfts);
-    setNFTs(nfts.ownedNfts);
   }
 };
 ```
@@ -366,40 +448,37 @@ const HomePage = () => {
   };
 
   const fetchNFTs = async () => {
-    if (!collectionAddress && !walletAddress) {
-      return;
-    }
-
     if (fetchForCollection) {
       await fetchNFTsForCollection();
     } else {
-      let nfts;
-      console.log('fetching nfts');
-      const api_key = 'A8A1Oo_UTB9IN5oNHfAc2tAxdR4UVwfM';
-      const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/getNFTs/`;
-      var requestOptions = {
-        method: 'GET',
-      };
-      if (!collectionAddress.length) {
-        console.log('fetching nfts for wallet only');
-        const fetchURL = `${baseURL}?owner=${walletAddress}`;
+      await fetchNFTsForWallet();
+    }
+  };
 
-        nfts = await fetch(fetchURL, requestOptions).then((data) =>
-          data.json()
-        );
-      } else {
-        if (walletAddress) {
-          console.log('fetching nfts for collection owned by address');
-          const fetchURL = `${baseURL}?owner=${walletAddress}&contractAddresses%5B%5D=${collectionAddress}`;
-          nfts = await fetch(fetchURL, requestOptions).then((data) =>
-            data.json()
-          );
-        }
-      }
+  const fetchNFTsForWallet = async () => {
+    if (!walletAddress) {
+      return;
+    }
+    let nfts;
+    console.log('fetching nfts');
+    const api_key = 'A8A1Oo_UTB9IN5oNHfAc2tAxdR4UVwfM';
+    const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/getNFTs/`;
+    var requestOptions = {
+      method: 'GET',
+    };
+    if (!collectionAddress.length) {
+      console.log('fetching nfts for wallet only');
+      const fetchURL = `${baseURL}?owner=${walletAddress}`;
 
-      if (nfts) {
-        console.log('nfts:', nfts);
-      }
+      nfts = await fetch(fetchURL, requestOptions).then((data) => data.json());
+    } else {
+      console.log('fetching nfts for collection owned by address');
+      const fetchURL = `${baseURL}?owner=${walletAddress}&contractAddresses%5B%5D=${collectionAddress}`;
+      nfts = await fetch(fetchURL, requestOptions).then((data) => data.json());
+    }
+
+    if (nfts) {
+      console.log('nfts:', nfts);
     }
   };
 
@@ -411,7 +490,7 @@ const HomePage = () => {
       };
       const api_key = 'A8A1Oo_UTB9IN5oNHfAc2tAxdR4UVwfM';
       const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/getNFTsForCollection/`;
-      const fetchURL = `${baseURL}?contractAddress=${collection}&withMetadata=${'true'}`;
+      const fetchURL = `${baseURL}?contractAddress=${collectionAddress}&withMetadata=${'true'}`;
       const nfts = await fetch(fetchURL, requestOptions).then((data) =>
         data.json()
       );
@@ -461,73 +540,6 @@ export default HomePage;
 Notice the use of the Alchemy API functions getNFTs and getNFTsForCollection and how the url for the fetch functions are built.
 
 ### Create the NFT Card component
-
-We want to display 5 properties:
-
-- Image
-- Title
-- TokenId
-- Contract Address
-- Description
-
-To access such properties have a look again at the NFT Object returned by the getNFTs and getNFTsForCollection api calls.
-
-This is an example of the json returned for nfts:
-
-```json
-{
-    "ownedNfts": [
-        {
-            "contract": {
-                "address": "0x0beed7099af7514ccedf642cfea435731176fb02"
-            },
-            "id": {
-                "tokenId": "28",
-                "tokenMetadata": {
-                    "tokenType": "ERC721"
-                }
-            },
-            "title": "DuskBreaker #28",
-            "description": "Breakers have the honor of serving humanity through their work on The Dusk. They are part of a select squad of 10,000 recruits who spend their days exploring a mysterious alien spaceship filled with friends, foes, and otherworldly technology.",
-            "tokenUri": {
-                "raw": "https://duskbreakers.gg/api/breakers/28",
-                "gateway": "https://duskbreakers.gg/api/breakers/28"
-            },
-            "media": [
-                {
-                    "raw": "https://duskbreakers.gg/breaker_images/28.png",
-                    "gateway": "https://duskbreakers.gg/breaker_images/28.png"
-                }
-            ],
-            "metadata": {
-                "name": "DuskBreaker #28",
-                "description": "Breakers have the honor of serving humanity through their work on The Dusk. They are part of a select squad of 10,000 recruits who spend their days exploring a mysterious alien spaceship filled with friends, foes, and otherworldly technology.",
-                "image": "https://duskbreakers.gg/breaker_images/28.png",
-                "external_url": "https://duskbreakers.gg",
-                "attributes": [
-                    {
-                        "value": "Locust Rider Armor (Red)",
-                        "trait_type": "Clothes"
-                    },
-                    ......
-                    {
-                        "value": "Big Smile (Purple)",
-                        "trait_type": "Mouth"
-                    },
-                    {
-                        "value": "Yellow",
-                        "trait_type": "Background"
-                    }
-                ]
-            },
-            "timeLastUpdated": "2022-02-16T22:52:54.719Z"
-        },
-        ......
-    ],
-    "totalCount": 6,
-    "blockHash": "0xeb2d26af5b6175344a14091777535a2cb21c681665a734a8285f889981987630"
-}
-```
 
 We can now create our NFT type right above our App component and update our code so that we can set the NFTs to display:
 

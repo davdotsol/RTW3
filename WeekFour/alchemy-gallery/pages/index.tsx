@@ -36,41 +36,47 @@ const HomePage = () => {
   };
 
   const fetchNFTs = async () => {
-    if (!collectionAddress && !walletAddress) {
-      return;
-    }
-
     if (fetchForCollection) {
       await fetchNFTsForCollection();
     } else {
-      let nfts;
-      console.log('fetching nfts');
-      const api_key = 'A8A1Oo_UTB9IN5oNHfAc2tAxdR4UVwfM';
-      const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/getNFTs/`;
-      var requestOptions = {
-        method: 'GET',
-      };
-      if (!collectionAddress.length) {
-        console.log('fetching nfts for wallet only');
-        const fetchURL = `${baseURL}?owner=${walletAddress}`;
+      await fetchNFTsForWallet();
+    }
+  };
 
-        nfts = await fetch(fetchURL, requestOptions).then((data) =>
-          data.json()
-        );
-      } else {
-        if (walletAddress) {
-          console.log('fetching nfts for collection owned by address');
-          const fetchURL = `${baseURL}?owner=${walletAddress}&contractAddresses%5B%5D=${collectionAddress}`;
-          nfts = await fetch(fetchURL, requestOptions).then((data) =>
-            data.json()
-          );
-        }
-      }
+  const fetchNFTsForWallet = async () => {
+    if (!walletAddress) {
+      return;
+    }
+    let nfts;
+    console.log('fetching nfts');
+    const api_key = 'A8A1Oo_UTB9IN5oNHfAc2tAxdR4UVwfM';
+    const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/getNFTs/`;
+    var requestOptions = {
+      method: 'GET',
+    };
+    if (!collectionAddress.length) {
+      console.log('fetching nfts for wallet only');
+      const fetchURL = `${baseURL}?owner=${walletAddress}`;
 
-      if (nfts) {
-        console.log('nfts:', nfts);
-        setNFTs(nfts.ownedNfts);
-      }
+      nfts = await fetch(fetchURL, requestOptions).then((data) => data.json());
+    } else {
+      console.log('fetching nfts for collection owned by address');
+      const fetchURL = `${baseURL}?owner=${walletAddress}&contractAddresses%5B%5D=${collectionAddress}`;
+      nfts = await fetch(fetchURL, requestOptions).then((data) => data.json());
+    }
+
+    if (nfts) {
+      console.log('nfts:', nfts);
+      const transformedNFTs = nfts.ownedNfts.map((nft) => {
+        return {
+          image: nft.media[0].gateway,
+          title: nft.title,
+          tokenId: nft.id.tokenId,
+          contractAddress: nft.contract.address,
+          description: nft.description,
+        };
+      });
+      setNFTs(transformedNFTs);
     }
   };
 
@@ -88,7 +94,16 @@ const HomePage = () => {
       );
       if (nfts) {
         console.log('NFTs in collection:', nfts);
-        setNFTs(nfts.nfts);
+        const transformedNFTs = nfts.nfts.map((nft) => {
+          return {
+            image: nft.media[0].gateway,
+            title: nft.title,
+            tokenId: nft.id.tokenId,
+            contractAddress: nft.contract.address,
+            description: nft.description,
+          };
+        });
+        setNFTs(transformedNFTs);
       }
     }
   };
